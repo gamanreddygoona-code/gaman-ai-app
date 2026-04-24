@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AAA 3D Game Studio — Unity · Meshy AI · CoD Warzone</title>
+<meta name="description" content="Generate AAA-quality 4K 3D games with PBR, UnrealBloom, ACES tone mapping — powered by Three.js, Meshy AI, and Unity-style rendering."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════
+   DESIGN SYSTEM
+═══════════════════════════════════ */
+:root {
+  --bg:        #05050a;
+  --surface:   #0d0d18;
+  --surface2:  #12121f;
+  --border:    rgba(255,255,255,0.07);
+  --accent:    #6c63ff;
+  --accent2:   #00d4ff;
+  --green:     #00ff88;
+  --red:       #ff4444;
+  --gold:      #ffd700;
+  --text:      #e8e8f0;
+  --muted:     rgba(255,255,255,0.4);
+  --radius:    12px;
+  --blur:      blur(20px);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOPBAR ── */
+#topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 20px;
+  height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 900;
+  font-size: 18px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+}
+.logo-icon {
+  font-size: 22px;
+  -webkit-text-fill-color: initial;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.badge-unity  { background: rgba(108,99,255,0.2); color: var(--accent);  border: 1px solid var(--accent); }
+.badge-meshy  { background: rgba(0,212,255,0.15); color: var(--accent2); border: 1px solid var(--accent2); }
+.badge-cod    { background: rgba(255,215,0,0.15); color: var(--gold);    border: 1px solid var(--gold); }
+.badge-4k     { background: rgba(0,255,136,0.15); color: var(--green);   border: 1px solid var(--green); }
+
+.topbar-spacer { flex: 1; }
+
+.quality-group {
+  display: flex;
+  gap: 4px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px;
+}
+.quality-btn {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.quality-btn:hover     { color: var(--text); background: rgba(255,255,255,0.07); }
+.quality-btn.active    { background: var(--accent); color: #fff; }
+.quality-btn.ultra.active { background: linear-gradient(135deg, #ffd700, #ff8800); color: #000; }
+
+/* ── LAYOUT ── */
+#studio {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── LEFT SIDEBAR ── */
+#sidebar {
+  width: 300px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-track { background: transparent; }
+#sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.panel {
+  border-bottom: 1px solid var(--border);
+  padding: 16px;
+}
+.panel-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+/* Prompt box */
+#prompt-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  padding: 12px;
+  resize: none;
+  height: 90px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+#prompt-input:focus { border-color: var(--accent); }
+#prompt-input::placeholder { color: var(--muted); }
+
+#generate-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, var(--accent), #8b5cf6);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+#generate-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+#generate-btn:hover::before { opacity: 1; }
+#generate-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(108,99,255,0.4); }
+#generate-btn:active { transform: translateY(0); }
+#generate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Quick prompts */
+.quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.quick-btn {
+  padding: 8px 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  line-height: 1.3;
+}
+.quick-btn:hover { border-color: var(--accent); background: rgba(108,99,255,0.1); }
+
+/* Graphics settings */
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-label { color: var(--muted); font-size: 12px; }
+.settings-value {
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--green);
+}
+
+/* Toggle switch */
+.toggle {
+  width: 36px;
+  height: 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.toggle.on { background: var(--accent); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: left 0.2s;
+}
+.toggle.on::after { left: 19px; }
+
+/* Meshy panel */
+#meshy-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  padding: 9px 11px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+#meshy-input:focus { border-color: var(--accent2); }
+#meshy-btn {
+  margin-top: 8px;
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, #0a2a4a, #003d5c);
+  border: 1px solid var(--accent2);
+  border-radius: 8px;
+  color: var(--accent2);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+#meshy-btn:hover { background: rgba(0,212,255,0.1); box-shadow: 0 4px 16px rgba(0,212,255,0.2); }
+
+/* Stats */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.stat-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+.stat-val {
+  font-size: 20px;
+  font-weight: 900;
+  font-family: 'JetBrains Mono', monospace;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.stat-label { font-size: 10px; color: var(--muted); margin-top: 2px; letter-spacing: 0.8px; }
+
+/* ── VIEWPORT ── */
+#viewport {
+  flex: 1;
+  position: relative;
+  background: #000;
+}
+
+#game-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* ── LOADING OVERLAY ── */
+#loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, #05050a, #0d0d18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 50;
+  transition: opacity 0.6s;
+}
+#loading-overlay.hidden { opacity: 0; pointer-events: none; }
+
+.idle-badge {
+  font-size: 64px;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+.idle-title {
+  font-size: 32px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--accent), var(--accent2), var(--green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  letter-spacing: 1px;
+}
+.idle-sub {
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+  max-width: 360px;
+  line-height: 1.6;
+}
+
+.feature-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 400px;
+}
+.chip {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border: 1px solid;
+}
+.chip-purple { background: rgba(108,99,255,0.15); color: var(--accent);  border-color: rgba(108,99,255,0.4); }
+.chip-blue   { background: rgba(0,212,255,0.10);  color: var(--accent2); border-color: rgba(0,212,255,0.3);  }
+.chip-green  { background: rgba(0,255,136,0.10);  color: var(--green);   border-color: rgba(0,255,136,0.3);  }
+.chip-gold   { background: rgba(255,215,0,0.10);  color: var(--gold);    border-color: rgba(255,215,0,0.3);  }
+.chip-red    { background: rgba(255,68,68,0.10);  color: var(--red);     border-color: rgba(255,68,68,0.3);  }
+
+/* ── GENERATING ANIM ── */
+#gen-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(5,5,10,0.88);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 60;
+  backdrop-filter: var(--blur);
+}
+#gen-overlay.show { display: flex; }
+
+.gen-spinner {
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(108,99,255,0.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.gen-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.gen-sub {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── STATUS BAR ── */
+#statusbar {
+  height: 28px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 20px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.status-item { display: flex; align-items: center; gap: 5px; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; }
+.dot-green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.dot-yellow { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+.dot-blue { background: var(--accent2); box-shadow: 0 0 6px var(--accent2); }
+
+/* ── CODE MONITOR ── */
+#code-monitor {
+  position: absolute;
+  bottom: 40px;
+  right: 20px;
+  width: 400px;
+  height: 250px;
+  background: rgba(5,5,10,0.85);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  z-index: 150;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  backdrop-filter: var(--blur);
+}
+#code-monitor.show { display: flex; }
+.monitor-header {
+  height: 30px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 8px;
+}
+.monitor-dot { width: 8px; height: 8px; border-radius: 50%; }
+.monitor-title { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; flex: 1; }
+.monitor-body {
+  flex: 1;
+  padding: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--green);
+  overflow-y: auto;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+.monitor-body::-webkit-scrollbar { width: 4px; }
+.monitor-body::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo">
+    <span class="logo-icon">⚡</span>
+    AAA Game Studio
+  </div>
+  <span class="badge badge-unity">Unity HDRP</span>
+  <span class="badge badge-meshy">Meshy AI</span>
+  <span class="badge badge-cod">CoD Warzone</span>
+  <span class="badge badge-4k">4K Ready</span>
+
+  <div class="topbar-spacer"></div>
+
+  <a href="/" style="text-decoration:none;padding:5px 12px;background:linear-gradient(135deg,#7c5cfc,#a78bfa);color:#fff;border-radius:6px;font-size:12px;font-weight:700;margin-right:10px;">
+    💬 AI Chat
+  </a>
+
+  <div class="quality-group">
+    <button class="quality-btn" id="q-low"    onclick="setGlobalQuality('low')">Low</button>
+    <button class="quality-btn" id="q-medium" onclick="setGlobalQuality('medium')">Medium</button>
+    <button class="quality-btn" id="q-high" onclick="setGlobalQuality('high')">High</button>
+    <button class="quality-btn ultra active" id="q-ultra" onclick="setGlobalQuality('ultra')">⚡ Ultra 4K</button>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div id="studio">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+
+    <!-- GENERATE -->
+    <div class="panel">
+      <div class="panel-title">🎮 Generate Game</div>
+      <textarea id="prompt-input" placeholder="e.g. warzone FPS shooter with buildings and soldiers..."></textarea>
+      <button id="generate-btn" onclick="generateGame()">
+        ⚡ Generate AAA 3D Game
+      </button>
+    </div>
+
+    <!-- QUICK PROMPTS -->
+    <div class="panel">
+      <div class="panel-title">⚡ Quick Launch</div>
+      <div class="quick-grid">
+        <button class="quick-btn" onclick="quickGen('warzone fps shooter game')">🔫 Warzone FPS</button>
+        <button class="quick-btn" onclick="quickGen('night racing car game')">🚗 Racing Game</button>
+        <button class="quick-btn" onclick="quickGen('3d platformer jump game')">🏃 Platformer</button>
+        <button class="quick-btn" onclick="quickGen('space shooter alien game')">🚀 Space Shooter</button>
+        <button class="quick-btn" onclick="quickGen('soccer football stadium game')">⚽ Soccer</button>
+        <button class="quick-btn" onclick="quickGen('combat soldier fps game')">🪖 Combat</button>
+      </div>
+    </div>
+
+    <!-- MESHY AI ASSETS -->
+    <div class="panel">
+      <div class="panel-title">🧊 Meshy AI Assets</div>
+      <input id="meshy-input" type="text" placeholder="e.g. armored soldier with rifle..."/>
+      <button id="meshy-btn" onclick="generateMeshyAsset()">
+        🌐 Generate 3D Asset
+      </button>
+      <div id="meshy-status" style="margin-top:8px; font-size:11px; color:var(--muted); min-height:16px;"></div>
+    </div>
+
+    <!-- GRAPHICS SETTINGS -->
+    <div class="panel">
+      <div class="panel-title">🎨 Graphics Settings</div>
+
+      <div class="settings-row">
+        <span class="settings-label">Renderer</span>
+        <span class="settings-value">Three.js r160</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">Tone Mapping</span>
+        <span class="settings-value">ACES Filmic</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">Shadows</span>
+        <span class="settings-value">PCFSoft</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">Bloom</span>
+        <div class="toggle on" id="bloom-toggle" onclick="toggleSetting('bloom')"></div>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">Anti-Aliasing</span>
+        <span class="settings-value">TAA</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">PBR Materials</span>
+        <span class="settings-value" style="color:var(--green)">ON</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">Pixel Ratio</span>
+        <span class="settings-value" id="pixel-ratio-display">1.5×</span>
+      </div>
+    </div>
+
+    <!-- LIVE STATS -->
+    <div class="panel">
+      <div class="panel-title">📊 Engine Stats</div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-val" id="stat-fps">--</div>
+          <div class="stat-label">FPS</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-res">HD</div>
+          <div class="stat-label">RESOLUTION</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-draws">0</div>
+          <div class="stat-label">DRAW CALLS</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-tris">0</div>
+          <div class="stat-label">TRIANGLES</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /sidebar -->
+
+  <!-- VIEWPORT -->
+  <div id="viewport">
+
+    <!-- Loading idle screen -->
+    <div id="loading-overlay">
+      <div class="idle-badge">⚡</div>
+      <div class="idle-title">AAA 3D Game Studio</div>
+      <div class="idle-sub">
+        Enter a game prompt and click Generate.<br/>
+        Powered by Three.js r160, Unity HDRP techniques, and Meshy AI.
+      </div>
+      <div class="feature-chips">
+        <span class="chip chip-purple">PBR Materials</span>
+        <span class="chip chip-blue">UnrealBloom</span>
+        <span class="chip chip-green">ACES Tone Map</span>
+        <span class="chip chip-gold">PCFSoft Shadows</span>
+        <span class="chip chip-red">4K Ready</span>
+        <span class="chip chip-purple">SSAO</span>
+        <span class="chip chip-blue">Volumetric Fog</span>
+        <span class="chip chip-green">Real-Time Physics</span>
+      </div>
+    </div>
+
+    <!-- Generating overlay -->
+    <div id="gen-overlay">
+      <div class="gen-spinner"></div>
+      <div class="gen-text">Building AAA Game...</div>
+      <div class="gen-sub" id="gen-sub-text">Initializing PBR renderer</div>
+    </div>
+
+    <!-- Game iframe -->
+    <iframe id="game-frame" title="3D Game Viewport" allow="pointer-lock *"></iframe>
+
+    <!-- Code Monitor -->
+    <div id="code-monitor">
+      <div class="monitor-header">
+        <div class="monitor-dot" style="background:#ff5f56"></div>
+        <div class="monitor-dot" style="background:#ffbd2e"></div>
+        <div class="monitor-dot" style="background:#27c93f"></div>
+        <div class="monitor-title">AI Coding Engine • Live Stream</div>
+      </div>
+      <div id="monitor-content" class="monitor-body"></div>
+    </div>
+  </div>
+
+</div><!-- /studio -->
+
+<!-- STATUS BAR -->
+<div id="statusbar">
+  <div class="status-item">
+    <div class="status-dot dot-green"></div>
+    <span>Three.js r160</span>
+  </div>
+  <div class="status-item">
+    <div class="status-dot dot-blue"></div>
+    <span>UnrealBloom + ACES</span>
+  </div>
+  <div class="status-item">
+    <div class="status-dot dot-yellow"></div>
+    <span id="status-engine">Ready</span>
+  </div>
+  <div style="flex:1"></div>
+  <div id="status-right" style="color:var(--muted);">No game loaded</div>
+</div>
+
+<!-- NOTIFICATION -->
+<div id="notif"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// STUDIO CONTROLLER
+// ═══════════════════════════════════════════════════════════
+
+let currentQuality = 'ultra';  // 🏆 Default to 4K
+let bloomEnabled   = true;
+let currentGame    = null;
+
+const steps = [
+  'Initializing PBR renderer...',
+  'Building scene geometry...',
+  'Applying ACES tone mapping...',
+  'Compiling UnrealBloom pass...',
+  'Generating PBR materials...',
+  'Setting up shadow maps...',
+  'Initializing physics...',
+  'Streaming assets...',
+  'Launching game engine...'
+];
+
+async function generateGame(retryCount = 0) {
+  const prompt = document.getElementById('prompt-input').value.trim();
+  if (!prompt) { showNotif('Please enter a game prompt!', 'error'); return; }
+
+  const btn = document.getElementById('generate-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating 4K Game...';
+
+  showGenerating();
+
+  // Animate status messages
+  let si = 0;
+  const stepInterval = setInterval(() => {
+    if (si < steps.length) {
+      document.getElementById('gen-sub-text').textContent = steps[si++];
+    }
+  }, 600);
+
+  try {
+    const res = await fetch('/3d/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    if (!res.ok) {
+      throw new Error(`Server error (${res.status}). Make sure the AI server is running.`);
+    }
+
+    const data = await res.json();
+    clearInterval(stepInterval);
+
+    if (data.html) {
+      // 🚀 Show code being written before launching
+      showCodeMonitor(data.html);
+      setTimeout(() => launchGame(data), 2000); 
+    } else if (data.error) {
+      // Auto-retry once on recoverable errors
+      if (retryCount < 1) {
+        document.getElementById('gen-sub-text').textContent = 'Retrying with fallback engine...';
+        setTimeout(() => generateGame(retryCount + 1), 1000);
+        return;
+      }
+      showNotif('⚠️ Error: ' + data.error, 'error');
+      hideGenerating();
+    } else {
+      // No html and no error — unexpected response
+      showNotif('⚠️ Unexpected response from server. Try a different prompt.', 'error');
+      hideGenerating();
+    }
+  } catch(e) {
+    clearInterval(stepInterval);
+    // Auto-retry once on connection errors
+    if (retryCount < 1) {
+      document.getElementById('gen-sub-text').textContent = 'Connection failed — retrying...';
+      setTimeout(() => generateGame(retryCount + 1), 2000);
+      return;
+    }
+    showNotif('❌ Connection error: ' + e.message + '. Is the server running?', 'error');
+    hideGenerating();
+  } finally {
+    if (retryCount >= 1 || !btn.disabled) {
+      btn.disabled = false;
+      btn.textContent = '⚡ Generate AAA 3D Game';
+    }
+  }
+}
+
+function launchGame(data) {
+  currentGame = data;
+  const frame = document.getElementById('game-frame');
+
+  // Hide idle screen if shown
+  document.getElementById('loading-overlay').classList.add('hidden');
+
+  // Write game HTML into iframe
+  frame.srcdoc = data.html;
+  frame.onload = () => {
+    hideGenerating();
+    updateStats(data);
+  };
+
+  // Update status bar
+  document.getElementById('status-engine').textContent = data.engine || 'AAA Engine';
+  document.getElementById('status-right').textContent  = '🎮 ' + (data.title || 'Game') + ' · ' + (data.quality || '4K-capable');
+
+  showNotif('✅ ' + (data.title || 'Game') + ' launched! Click game to start.', 'success');
+
+  // Apply quality to game
+  setTimeout(() => applyQualityToGame(currentQuality), 2000);
+}
+
+function updateStats(data) {
+  const resMap = { low:'1080p', medium:'1440p', high:'2K', ultra:'4K' };
+  document.getElementById('stat-res').textContent    = resMap[currentQuality] || '2K';
+  document.getElementById('stat-draws').textContent  = data.type === 'fps' ? '280' : '150';
+  document.getElementById('stat-tris').textContent   = data.type === 'fps' ? '48K' : '24K';
+}
+
+// Poll FPS from iframe
+setInterval(() => {
+  try {
+    const fpsEl = document.getElementById('game-frame')
+      ?.contentDocument?.getElementById('fps-counter');
+    if (fpsEl) {
+      const fps = fpsEl.textContent.replace(' FPS', '');
+      document.getElementById('stat-fps').textContent = fps;
+    }
+  } catch(e) {}
+}, 500);
+
+function quickGen(prompt) {
+  document.getElementById('prompt-input').value = prompt;
+  generateGame();
+}
+
+// ── QUALITY ──
+function setGlobalQuality(level) {
+  currentQuality = level;
+  document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('q-' + level)?.classList.add('active');
+
+  const ratios = { low: '0.75×', medium: '1.0×', high: '1.5×', ultra: '2.0× (4K)' };
+  document.getElementById('pixel-ratio-display').textContent = ratios[level];
+  document.getElementById('stat-res').textContent = { low:'1080p', medium:'1440p', high:'2K', ultra:'4K' }[level];
+
+  applyQualityToGame(level);
+}
+
+function applyQualityToGame(level) {
+  try {
+    const w = document.getElementById('game-frame')?.contentWindow;
+    if (w && typeof w.setQuality === 'function') w.setQuality(level);
+  } catch(e) {}
+}
+
+// ── TOGGLE SETTINGS ──
+function toggleSetting(key) {
+  if (key === 'bloom') {
+    bloomEnabled = !bloomEnabled;
+    const el = document.getElementById('bloom-toggle');
+    el.classList.toggle('on', bloomEnabled);
+    try {
+      const w = document.getElementById('game-frame')?.contentWindow;
+      if (w && w.bloomPass) w.bloomPass.enabled = bloomEnabled;
+    } catch(e) {}
+  }
+}
+
+// ── MESHY AI ──
+async function generateMeshyAsset() {
+  const prompt = document.getElementById('meshy-input').value.trim();
+  if (!prompt) { showNotif('Enter an asset description!', 'error'); return; }
+
+  const btn = document.getElementById('meshy-btn');
+  const status = document.getElementById('meshy-status');
+  btn.disabled = true;
+  btn.textContent = '⏳ Calling Meshy AI...';
+  status.textContent = 'Sending to Meshy AI...';
+  status.style.color = 'var(--accent2)';
+
+  try {
+    const res = await fetch('/3d/meshy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+    const data = await res.json();
+    if (data.model_url) {
+      status.textContent = '✅ Asset ready: ' + data.model_url;
+      status.style.color = 'var(--green)';
+      showNotif('🧊 3D asset generated by Meshy AI!', 'success');
+    } else if (data.error) {
+      status.textContent = 'ℹ️ ' + (data.status === 'meshy_unavailable' ? 'Set MESHY_API_KEY to enable Meshy AI' : data.error);
+      status.style.color = 'var(--muted)';
+    }
+  } catch(e) {
+    status.textContent = 'Error: ' + e.message;
+    status.style.color = 'var(--red)';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🌐 Generate 3D Asset';
+  }
+}
+
+// ── UI HELPERS ──
+function showGenerating() {
+  document.getElementById('gen-overlay').classList.add('show');
+  document.getElementById('gen-sub-text').textContent = steps[0];
+}
+function hideGenerating() {
+  document.getElementById('gen-overlay').classList.remove('show');
+}
+
+let notifTimer;
+function showNotif(msg, type = 'success') {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.className = 'show notif-' + type;
+  clearTimeout(notifTimer);
+  notifTimer = setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+function showCodeMonitor(code) {
+  const monitor = document.getElementById('code-monitor');
+  const content = document.getElementById('monitor-content');
+  monitor.classList.add('show');
+  content.textContent = '';
+  
+  // Extract just the Three.js script part for display
+  let displayCode = code;
+  const scriptMatch = code.match(/<script>([\s\S]*?)<\/script>/);
+  if (scriptMatch) displayCode = scriptMatch[1].trim();
+  
+  // Simulate typing
+  let i = 0;
+  const chunk = 50; // chars per tick
+  const timer = setInterval(() => {
+    content.textContent += displayCode.substring(i, i + chunk);
+    i += chunk;
+    content.scrollTop = content.scrollHeight;
+    if (i >= displayCode.length || i > 5000) { // cap display
+      clearInterval(timer);
+      setTimeout(() => monitor.classList.remove('show'), 3000);
+    }
+  }, 20);
+}
+
+// Enter key to generate
+document.getElementById('prompt-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) generateGame();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Snake Game</title>
+    <style>
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #1a1a2e; }
+        canvas { border: 3px solid #7c5cfc; background: #0a0a0f; }
+        #info { position: absolute; top: 20px; color: white; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <div id="info">Score: <span id="score">0</span> | Speed: <span id="speed">1</span></div>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 20;
+        const gridCount = canvas.width / gridSize;
+
+        let snake = [{ x: 10, y: 10 }];
+        let food = { x: 15, y: 15 };
+        let direction = { x: 1, y: 0 };
+        let nextDirection = { x: 1, y: 0 };
+        let score = 0;
+        let speed = 1;
+        let frameCount = 0;
+
+        window.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowUp': if(direction.y === 0) nextDirection = {x: 0, y: -1}; break;
+                case 'ArrowDown': if(direction.y === 0) nextDirection = {x: 0, y: 1}; break;
+                case 'ArrowLeft': if(direction.x === 0) nextDirection = {x: -1, y: 0}; break;
+                case 'ArrowRight': if(direction.x === 0) nextDirection = {x: 1, y: 0}; break;
+            }
+        });
+
+        function gameLoop() {
+            frameCount++;
+            const moveSpeed = Math.max(5, 15 - speed);
+
+            if (frameCount % moveSpeed === 0) {
+                direction = nextDirection;
+                const head = snake[0];
+                const newHead = {
+                    x: (head.x + direction.x + gridCount) % gridCount,
+                    y: (head.y + direction.y + gridCount) % gridCount
+                };
+
+                for (let segment of snake) {
+                    if (newHead.x === segment.x && newHead.y === segment.y) {
+                        alert('Game Over! Score: ' + score);
+                        location.reload();
+                        return;
+                    }
+                }
+
+                snake.unshift(newHead);
+
+                if (newHead.x === food.x && newHead.y === food.y) {
+                    score += 10;
+                    speed = Math.floor(score / 50) + 1;
+                    food = {
+                        x: Math.floor(Math.random() * gridCount),
+                        y: Math.floor(Math.random() * gridCount)
+                    };
+                } else {
+                    snake.pop();
+                }
+            }
+
+            ctx.fillStyle = '#0a0a0f';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00FF00';
+            for (let segment of snake) {
+                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
+            }
+
+            ctx.fillStyle = '#FF4444';
+            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+
+            document.getElementById('score').textContent = score;
+            document.getElementById('speed').textContent = speed;
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>

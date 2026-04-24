@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaman Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        ::selection { background: rgba(56, 189, 248, 0.3); }
+
+        :root {
+            --bg-base: #030712;
+            --panel-bg: rgba(15, 23, 42, 0.65);
+            --panel-border: rgba(56, 189, 248, 0.15);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-cyan: #22d3ee;
+            --accent-blue: #3b82f6;
+            --accent-purple: #a855f7;
+            --glow-cyan: 0 0 15px rgba(34, 211, 238, 0.4);
+            --glow-purple: 0 0 15px rgba(168, 85, 247, 0.4);
+            --glass: rgba(30, 41, 59, 0.7);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: radial-gradient(circle at 50% 0%, #0f172a, var(--bg-base) 70%);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            padding: 16px;
+            gap: 16px;
+        }
+
+        /* ══════════════ PANELS ══════════════ */
+        .panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ══════════════ LEFT SIDEBAR ══════════════ */
+        .left-sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            padding: 20px 16px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding: 0 8px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--glow-cyan);
+            animation: pulse-glow 3s infinite alternate;
+        }
+        
+        .logo-icon svg { width: 18px; height: 18px; fill: #fff; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 10px rgba(34, 211, 238, 0.3); }
+            100% { box-shadow: 0 0 25px rgba(34, 211, 238, 0.6); }
+        }
+
+        .logo-text { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 0 8px 12px;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 12px 14px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            margin-bottom: 6px;
+        }
+
+        .nav-btn.active {
+            background: rgba(34, 211, 238, 0.1);
+            border-color: rgba(34, 211, 238, 0.3);
+            box-shadow: inset 0 0 20px rgba(34, 211, 238, 0.05);
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-icon {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+        }
+        
+        .nav-sub {
+            display: block;
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            font-weight: 400;
+        }
+
+        /* ══════════════ CENTER PANEL ══════════════ */
+        .center-panel {
+            flex: 1;
+            position: relative;
+        }
+
+        .center-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--panel-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .active-canvas-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat::-webkit-scrollbar { width: 6px; }
+        .chat::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+        /* Welcome / Workflow Screen */
+        .welcome {
+            animation: fadeIn 0.8s ease;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .thread-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            background: linear-gradient(to right, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Workflow Visualizer */
+        .workflow-box {
+            background: var(--glass);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .wf-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .wf-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .wf-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            right: 30px;
+            height: 2px;
+            background: linear-gradient(to right, rgba(34,211,238,0.5), rgba(168,85,247,0.5));
+            z-index: 0;
+        }
+
+        .wf-step {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .wf-icon {
+            width: 42px;
+            height: 42px;
+            background: #0f172a;
+            border: 2px solid var(--panel-border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .wf-step.active .wf-icon {
+            border-color: var(--accent-cyan);
+            box-shadow: var(--glow-cyan);
+            color: var(--accent-cyan);
+            animation: bounce 2s infinite;
+        }
+        
+        .wf-step.purple .wf-icon {
+            border-color: var(--accent-purple);
+            box-shadow: var(--glow-purple);
+            color: var(--accent-purple);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .wf-text { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); text-align: center; }
+        .wf-step.active .wf-text { color: var(--accent-cyan); }
+
+        /* Fake Content Box */
+        .fake-content {
+            background: var(--glass);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .fake-text { flex: 1; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+        .fake-text ul { padding-left: 16px; margin-top: 10px; }
+        .fake-text li { margin-bottom: 8px; }
+
+        .fake-chart {
+            width: 250px;
+            height: 150px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-end;
+            padding: 10px;
+            gap: 8px;
+            justify-content: center;
+        }
+        .bar { width: 24px; border-radius: 4px 4px 0 0; }
+        .bar:nth-child(1) { height: 60%; background: var(--accent-cyan); }
+        .bar:nth-child(2) { height: 40%; background: var(--accent-blue); }
+        .bar:nth-child(3) { height: 80%; background: var(--accent-cyan); }
+        .bar:nth-child(4) { height: 50%; background: var(--accent-blue); }
+        .bar:nth-child(5) { height: 90%; background: var(--accent-purple); }
+
+        .verification {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #10b981;
+            font-weight: 500;
+        }
+
+        .chips { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;}
+        .chip {
+            padding: 6px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px; color: var(--text-muted); font-size: 11px; cursor: pointer;
+            transition: all 0.2s; display: flex; align-items: center; gap: 4px;
+        }
+        .chip:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: var(--accent-cyan); }
+
+        /* Input Area */
+        .input-wrap {
+            padding: 20px 24px;
+            background: var(--panel-bg);
+            border-top: 1px solid var(--panel-border);
+        }
+
+        .input-box {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-end;
+            padding: 8px 12px;
+            transition: border-color 0.2s;
+        }
+
+        .input-box:focus-within { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(34,211,238,0.1); }
+
+        .input-field {
+            flex: 1; background: transparent; border: none; color: #fff;
+            font-family: inherit; font-size: 14px; resize: none; outline: none;
+            padding: 8px; min-height: 24px; max-height: 150px;
+        }
+        .input-field::placeholder { color: #475569; }
+
+        .send-btn {
+            background: var(--accent-blue);
+            border: none;
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            color: #fff;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+        }
+        .send-btn:hover { background: var(--accent-cyan); box-shadow: var(--glow-cyan); }
+
+        /* Messages overriding old styles */
+        .msg { padding: 16px 20px; background: var(--glass); border: 1px solid var(--panel-border); border-radius: 12px; margin-bottom: 16px; animation: fadeIn 0.4s ease; max-width: 85%; width: fit-content; display: flex; flex-direction: column;}
+        .msg-user { border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); align-self: flex-end; border-bottom-right-radius: 2px; }
+        .msg-user .msg-head { flex-direction: row-reverse; }
+        .msg-bot { align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .msg-avatar { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .msg-avatar.user { background: #334155; }
+        .msg-avatar.bot { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); box-shadow: 0 0 10px rgba(34,211,238,0.3); }
+        .msg-avatar svg { width: 14px; height: 14px; fill: white; }
+        .msg-name { font-size: 13px; font-weight: 600; color: #fff; }
+        .msg-body { font-size: 14px; line-height: 1.6; color: var(--text-main); }
+        .msg-body pre { background: #020617; border: 1px solid var(--panel-border); border-radius: 8px; padding: 16px; margin: 12px 0; overflow-x: auto; color: #e2e8f0; font-family: monospace; font-size: 13px;}
+        
+        .agent-box { background: rgba(0,0,0,0.2); border: 1px solid var(--panel-border); border-radius: 8px; padding: 12px; margin-top: 12px;}
+        .a-step { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
+        .a-head { color: var(--accent-cyan); font-weight: 600; margin-bottom: 4px; display:flex; align-items:center; gap:6px;}
+        .a-body { color: var(--text-muted); }
+
+        .typing { display: flex; gap: 6px; padding: 16px; }
+        .typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-cyan); animation: bounce 1s infinite alternate; }
+        .typing span:nth-child(2) { animation-delay: 0.2s; }
+        .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+        /* ══════════════ RIGHT SIDEBAR ══════════════ */
+        .right-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            padding: 20px 16px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-bottom: 32px;
+        }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; background: #475569; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;}
+        .user-info { display: flex; flex-direction: column; align-items: flex-end;}
+        .u-name { font-size: 13px; font-weight: 600; }
+        .u-role { font-size: 10px; color: var(--text-muted); }
+
+        .tool-btn {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        .tool-btn:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: inset 0 0 15px rgba(34,211,238,0.1);
+            transform: translateX(-2px);
+        }
+        .tool-icon { font-size: 16px; color: var(--accent-cyan); }
+        .tool-sub { display: block; font-size: 10px; color: var(--text-muted); font-weight: 400; margin-top: 2px;}
+
+        .slider-group { margin-bottom: 24px; }
+        .slider-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;}
+        input[type=range] {
+            -webkit-appearance: none; width: 100%; background: transparent;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: rgba(255,255,255,0.1); border-radius: 2px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            height: 12px; width: 12px; border-radius: 50%; background: var(--accent-cyan); cursor: pointer; -webkit-appearance: none; margin-top: -4px; box-shadow: var(--glow-cyan);
+        }
+
+        .refine-btn {
+            width: 100%; background: transparent; border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted); padding: 8px 0; border-radius: 8px; font-size: 12px;
+            margin-bottom: 8px; cursor: pointer; transition: all 0.2s;
+        }
+        .refine-btn:hover { background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.3); }
+
+    </style>
+</head>
+<body>
+
+    <!-- ═══ LEFT SIDEBAR ═══ -->
+    <aside class="panel left-sidebar">
+        <div class="logo-area">
+            <img src="/static/logo.png" style="width: 36px; height: 36px; border-radius: 8px; object-fit: cover; box-shadow: var(--glow-cyan); animation: pulse-glow 3s infinite alternate;">
+            <div class="logo-text">Aura Intel</div>
+        </div>
+
+        <div class="section-title">Workspace Map</div>
+        
+        <button class="nav-btn active" onclick="location.reload()">
+            <span class="nav-icon">📊</span>
+            <div>
+                Deep Research
+                <span class="nav-sub">(Web Analysis)</span>
+            </div>
+        </button>
+        <button class="nav-btn">
+            <span class="nav-icon">🐍</span>
+            <div>
+                Python Agent
+                <span class="nav-sub">(TensorFlow)</span>
+            </div>
+        </button>
+        <button class="nav-btn" onclick="window.open('/3d','_blank')">
+            <span class="nav-icon">🎮</span>
+            <div>
+                3D Engine
+                <span class="nav-sub">(AAA Graphics)</span>
+            </div>
+        </button>
+        <button class="nav-btn">
+            <span class="nav-icon">⚙️</span>
+            <div>
+                System Config
+                <span class="nav-sub">(Local Model)</span>
+            </div>
+        </button>
+    </aside>
+
+    <!-- ═══ CENTER PANEL ═══ -->
+    <main class="panel center-panel">
+        <div class="center-header">
+            <div class="active-canvas-label">Active Canvas</div>
+            <div style="font-size: 18px; color: var(--text-muted);">···</div>
+        </div>
+
+        <div class="chat" id="chatContainer">
+            <!-- Welcome / Visualizer Area -->
+            <div class="welcome" id="welcome">
+                <h2 class="thread-title">Gaman AI: Agentic Workspace</h2>
+                
+                <div class="workflow-box">
+                    <div class="wf-label">Workflow Visualizer</div>
+                    <div class="wf-steps">
+                        <div class="wf-step active">
+                            <div class="wf-icon">📋</div>
+                            <div class="wf-text">[PLANNING]</div>
+                        </div>
+                        <div class="wf-step">
+                            <div class="wf-icon">🔍</div>
+                            <div class="wf-text">WEB SEARCH<br><span style="font-size:8px;opacity:0.6;text-transform:none;">(Multi-source)</span></div>
+                        </div>
+                        <div class="wf-step">
+                            <div class="wf-icon">📄</div>
+                            <div class="wf-text">CODE GEN<br><span style="font-size:8px;opacity:0.6;text-transform:none;">(Logic Analysis)</span></div>
+                        </div>
+                        <div class="wf-step purple">
+                            <div class="wf-icon">✨</div>
+                            <div class="wf-text">SYNTHESIS<br><span style="font-size:8px;opacity:0.6;text-transform:none;">(Cross correlation)</span></div>
+                        </div>
+                        <div class="wf-step">
+                            <div class="wf-icon">🚀</div>
+                            <div class="wf-text">OUTPUT<br><span style="font-size:8px;opacity:0.6;text-transform:none;">(Execution)</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-wrap">
+            <div class="input-box">
+                <textarea class="input-field" id="userInput" placeholder="Initialize command sequence or ask a question..." rows="1" onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">▲</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- ═══ RIGHT SIDEBAR ═══ -->
+    <aside class="panel right-sidebar">
+        <div class="user-profile">
+            <div class="user-info">
+                <div class="u-name">Developer</div>
+                <div class="u-role">Admin Access</div>
+            </div>
+            <div class="avatar">DV</div>
+            <div style="font-size: 10px; cursor: pointer;">▼</div>
+        </div>
+
+        <div class="section-title" style="margin-top: 10px;">Tool & Insight Hub</div>
+        
+        <div class="slider-group" style="margin-top:20px;">
+            <div class="slider-label"><span>Context Control</span> <span style="color:#fff;">Accurate</span></div>
+            <input type="range" min="1" max="100" value="75">
+        </div>
+        <div class="slider-group">
+            <div class="slider-label"><span>Depth</span> <span style="color:#fff;">Expert</span></div>
+            <input type="range" min="1" max="100" value="90">
+        </div>
+
+        <div style="margin-top: 30px;">
+            <button class="tool-btn" onclick="useSuggestion({textContent: 'Write a Python web scraper'})">
+                <span class="tool-icon">&lt;/&gt;</span>
+                <div>
+                    Code Sandbox
+                    <span class="tool-sub">(with live interpreter)</span>
+                </div>
+            </button>
+            <button class="tool-btn" onclick="window.open('/3d','_blank')">
+                <span class="tool-icon">🖼️</span>
+                <div>
+                    Image/3D Synthesis
+                    <span class="tool-sub">(multi-model)</span>
+                </div>
+            </button>
+            <button class="tool-btn">
+                <span class="tool-icon">🔊</span>
+                <div>
+                    Multimodal Input
+                    <span class="tool-sub">(Upload Image/Audio)</span>
+                </div>
+            </button>
+            <button class="tool-btn" style="border-color: rgba(168,85,247,0.4); box-shadow: inset 0 0 10px rgba(168,85,247,0.1);">
+                <span class="tool-icon" style="color:var(--accent-purple);">🚀</span>
+                <div>
+                    Execute Agent
+                </div>
+            </button>
+        </div>
+
+        <div class="section-title" style="margin-top: 30px;">Advanced Refinements</div>
+        <button class="refine-btn">Fact Check</button>
+        <button class="refine-btn">Compare Models</button>
+        <button class="refine-btn">Explain Reasoning</button>
+        <button class="refine-btn">Cite Sources</button>
+    </aside>
+
+    <script src="/static/script.js?v=5"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+fastapi
+uvicorn[standard]
+jinja2
+pandas
+scikit-learn
+joblib
+requests
+numpy
+beautifulsoup4
+sentence-transformers
+torch
+transformers
+peft
+accelerate
+bitsandbytes
+sentencepiece
+protobuf
+anthropic
+trimesh
+pillow
+slowapi
+# Fast local LLM (GGUF models — replaces slow GPT-J-6B)
+llama-cpp-python
+# Fast vector search for FAISS semantic engine
+faiss-cpu
+# Model download helper
+huggingface_hub

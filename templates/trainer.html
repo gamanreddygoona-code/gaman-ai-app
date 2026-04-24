@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GamanAI — World Training Dashboard</title>
+    <style>
+        :root {
+            --primary: #00ff41;
+            --bg: #0d0d0d;
+            --card: #1a1a1a;
+            --text: #e0e0e0;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+        header {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        h1 {
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin: 0;
+        }
+        .status-badge {
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--primary);
+            padding: 5px 15px;
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+        .panel {
+            background: var(--card);
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .panel h2 {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-top: 0;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        .log-box {
+            height: 400px;
+            overflow-y: auto;
+            background: #000;
+            padding: 10px;
+            font-size: 0.9rem;
+            border-radius: 5px;
+            border: 1px solid #222;
+        }
+        .log-entry {
+            margin-bottom: 8px;
+            border-left: 2px solid var(--primary);
+            padding-left: 10px;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .log-time { color: #666; font-size: 0.7rem; }
+        .log-msg { color: var(--text); }
+        .log-success { color: #00ff41; }
+        .log-info { color: #00d2ff; }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 5px;
+        }
+        .stat-val {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+        
+        .topic-input {
+            width: 100%;
+            background: #000;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 15px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .btn-train {
+            width: 100%;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            text-transform: uppercase;
+        }
+        .btn-train:hover {
+            background: #00cc33;
+            box-shadow: 0 0 15px var(--primary);
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="/static/images/logo.png" alt="Gaman AI" style="width: 50px; height: 50px; border-radius: 10px; border: 1px solid var(--primary); box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);">
+                <h1>World Trainer <span style="font-size: 0.5em; opacity: 0.5;">v1.0</span></h1>
+            </div>
+            <div class="status-badge" id="status">NEURAL LINK: READY</div>
+        </header>
+
+        <div class="dashboard-grid">
+            <div class="left-col">
+                <div class="panel">
+                    <h2>Live Ingestion Stats</h2>
+                    <div class="stat-item">
+                        <span>Web Facts Learned</span>
+                        <div class="stat-val" id="total-facts">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <span>Topics Mastered</span>
+                        <div class="stat-val" id="total-topics">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <span>Neural Confidence</span>
+                        <div class="stat-val">95%</div>
+                    </div>
+                </div>
+                
+                <div class="panel" style="margin-top: 20px;">
+                    <h2>Initiate Subject Training</h2>
+                    <input type="text" id="topic-input" class="topic-input" placeholder="e.g. History of Rome, Quantum Physics...">
+                    <button class="btn-train" onclick="startTraining()">START INGESTION</button>
+                    <p style="font-size: 0.7rem; color: #666; margin-top: 10px;">Warning: Autonomous learning will consume live web data and store it permanently.</p>
+                </div>
+            </div>
+
+            <div class="right-col">
+                <div class="panel">
+                    <h2>Neural Log Stream</h2>
+                    <div class="log-box" id="log-box">
+                        <div class="log-entry"><span class="log-time">[SYSTEM]</span> <span class="log-msg">Neural core initialized...</span></div>
+                        <div class="log-entry"><span class="log-time">[SYSTEM]</span> <span class="log-msg">Ready for world data ingestion.</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addLog(msg, type = 'normal') {
+            const box = document.getElementById('log-box');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const time = new Date().toLocaleTimeString();
+            entry.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-msg ${'log-'+type}">${msg}</span>`;
+            box.appendChild(entry);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function updateStats() {
+            try {
+                const resp = await fetch('/api/train/stats');
+                const data = await resp.json();
+                document.getElementById('total-facts').innerText = data.total_web_facts;
+                document.getElementById('total-topics').innerText = data.recent_topics.length;
+            } catch (e) {}
+        }
+
+        async function startTraining() {
+            const topic = document.getElementById('topic-input').value.strip();
+            if (!topic) return;
+
+            document.getElementById('status').innerText = "NEURAL LINK: ACTIVE";
+            addLog(`Initializing training for: ${topic}`, 'info');
+            document.getElementById('topic-input').value = "";
+
+            try {
+                const response = await fetch('/api/train', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({topic: topic})
+                });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    addLog(`Successfully ingested data for ${topic}`, 'success');
+                    updateStats();
+                } else {
+                    addLog(`Error training ${topic}: ${result.message}`, 'error');
+                }
+            } catch (e) {
+                addLog(`Connection error during training`, 'error');
+            }
+            
+            document.getElementById('status').innerText = "NEURAL LINK: READY";
+        }
+
+        setInterval(updateStats, 5000);
+        updateStats();
+    </script>
+</body>
+</html>

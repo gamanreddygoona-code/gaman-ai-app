@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaman AI — Web Studio Premier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #05050a;
+            --surface: #0d0d18;
+            --accent: #6c63ff;
+            --text: #e8e8f0;
+            --border: rgba(255,255,255,0.07);
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #sidebar {
+            width: 380px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+        #viewport-container {
+            flex: 1;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+        #toolbar {
+            position: absolute;
+            top: 20px;
+            display: flex;
+            gap: 10px;
+            background: rgba(255,255,255,0.05);
+            padding: 8px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        .tool-btn {
+            padding: 8px 15px;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        .tool-btn.active { background: var(--accent); }
+        
+        #viewport-wrapper {
+            width: 100%;
+            height: 100%;
+            max-width: 1280px;
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 30px 100px rgba(0,0,0,0.8);
+            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        textarea {
+            width: 100%;
+            height: 180px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: #fff;
+            padding: 20px;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        textarea:focus { border-color: var(--accent); }
+        
+        #gen-btn {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--accent) 0%, #a29bfe 100%);
+            color: #fff;
+            border: none;
+            border-radius: 16px;
+            font-weight: 900;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.4s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #gen-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(108,99,255,0.4); }
+        #gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .loading {
+            position: absolute;
+            inset: 0;
+            background: rgba(5,5,10,0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── CODE MONITOR ── */
+        #code-monitor {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 450px;
+            height: 300px;
+            background: rgba(5,5,10,0.9);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.7);
+            backdrop-filter: blur(15px);
+        }
+        #code-monitor.show { display: flex; }
+        .monitor-header {
+            height: 35px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            gap: 10px;
+        }
+        .monitor-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .monitor-title { font-size: 11px; font-weight: 900; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; flex: 1; }
+        .monitor-body {
+            flex: 1;
+            padding: 20px;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 12px;
+            color: #00ff88;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+        .monitor-body::-webkit-scrollbar { width: 4px; }
+        .monitor-body::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <div>
+            <h2 style="font-weight: 900; background: linear-gradient(90deg, #6c63ff, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 28px; margin-bottom: 5px;">STUDIO PREMIER</h2>
+            <p style="font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 600;">$10,000 Quality Website Engine</p>
+        </div>
+        
+        <div style="flex:1; display:flex; flex-direction:column; gap:15px;">
+            <label style="font-size:12px; font-weight:700; opacity:0.4; text-transform:uppercase;">Vision Prompt</label>
+            <textarea id="prompt" placeholder="Describe the soul of your website... (e.g. A futuristic cyber-security firm with glitched effects and deep violet tones)"></textarea>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border);">
+                    <div style="font-size:10px; opacity:0.4; margin-bottom:5px;">QUALITY</div>
+                    <div style="font-weight:700; font-size:13px;">PRODUCTION</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border);">
+                    <div style="font-size:10px; opacity:0.4; margin-bottom:5px;">AI MODEL</div>
+                    <div style="font-weight:700; font-size:13px;">GAMAN PREMIER</div>
+                </div>
+            </div>
+            
+            <button id="gen-btn" onclick="generateSite()">⚡ Build Website</button>
+        </div>
+        
+        <a href="/" style="color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 700; padding: 20px; text-align: center; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--border);">← Back to Chat</a>
+    </div>
+
+    <div id="viewport-container">
+        <div id="toolbar">
+            <button class="tool-btn active" onclick="resizeViewport('desktop', this)">Desktop</button>
+            <button class="tool-btn" onclick="resizeViewport('tablet', this)">Tablet</button>
+            <button class="tool-btn" onclick="resizeViewport('mobile', this)">Mobile</button>
+        </div>
+        
+        <div id="viewport-wrapper">
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <div style="font-weight: 900; letter-spacing: 2px; font-size: 14px;">GENERATING ARCHITECTURE...</div>
+                <div id="status-text" style="font-size:11px; opacity:0.4; margin-top:10px;">Reasoning over design language</div>
+            </div>
+            <iframe id="preview"></iframe>
+        </div>
+
+        <!-- Code Monitor Overlay -->
+        <div id="code-monitor">
+            <div class="monitor-header">
+                <div class="monitor-dot" style="background:#ff5f56"></div>
+                <div class="monitor-dot" style="background:#ffbd2e"></div>
+                <div class="monitor-dot" style="background:#27c93f"></div>
+                <div class="monitor-title">Gaman AI Web Engine • Live Coding</div>
+            </div>
+            <div id="monitor-content" class="monitor-body"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentCode = "";
+
+        function resizeViewport(type, btn) {
+            const wrapper = document.getElementById('viewport-wrapper');
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            if (type === 'mobile') {
+                wrapper.style.maxWidth = '375px';
+                wrapper.style.height = '667px';
+            } else if (type === 'tablet') {
+                wrapper.style.maxWidth = '768px';
+                wrapper.style.height = '1024px';
+            } else {
+                wrapper.style.maxWidth = '1280px';
+                wrapper.style.height = '100%';
+            }
+        }
+
+        async function generateSite() {
+            const promptEl = document.getElementById('prompt');
+            const prompt = promptEl.value;
+            if (!prompt) return;
+
+            const btn = document.getElementById('gen-btn');
+            const loading = document.getElementById('loading');
+            const preview = document.getElementById('preview');
+            const statusText = document.getElementById('status-text');
+
+            btn.disabled = true;
+            loading.style.display = 'flex';
+            
+            const statuses = currentCode ? [
+                "Analyzing existing architecture...",
+                "Synthesizing modification delta...",
+                "Applying surgical code updates...",
+                "Validating visual integrity..."
+            ] : [
+                "Initializing Deep Thought Engine...",
+                "Analyzing design requirements...",
+                "Synthesizing custom CSS architecture...",
+                "Generating bespoke HTML structure...",
+                "Integrating interactive components...",
+                "Polishing AAA aesthetics..."
+            ];
+            let sIdx = 0;
+            const sInt = setInterval(() => {
+                statusText.innerText = statuses[sIdx % statuses.length];
+                sIdx++;
+            }, 1500);
+
+            try {
+                let endpoint = '/api/website/generate';
+                let bodyData = { prompt };
+                
+                if (currentCode) {
+                    endpoint = '/api/website/modify';
+                    bodyData = { prompt, current_code: currentCode };
+                }
+
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bodyData)
+                });
+                const data = await res.json();
+                
+                if (data.code) {
+                    currentCode = data.code;
+                    showCodeMonitor(currentCode);
+                    setTimeout(() => {
+                        preview.srcdoc = currentCode;
+                        promptEl.value = "";
+                        btn.innerText = "⚡ Update Website";
+                    }, 2500);
+                } else {
+                    alert("Error: " + (data.error || "Generation failed"));
+                }
+            } catch(e) {
+                alert("Connection failed");
+            } finally {
+                clearInterval(sInt);
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        function showCodeMonitor(code) {
+            const monitor = document.getElementById('code-monitor');
+            const content = document.getElementById('monitor-content');
+            monitor.classList.add('show');
+            content.textContent = '';
+            
+            let i = 0;
+            const chunk = 70; // typing speed
+            const timer = setInterval(() => {
+                content.textContent += code.substring(i, i + chunk);
+                i += chunk;
+                content.scrollTop = content.scrollHeight;
+                if (i >= code.length || i > 6000) {
+                    clearInterval(timer);
+                    setTimeout(() => monitor.classList.remove('show'), 4000);
+                }
+            }, 15);
+        }
+    </script>
+</body>
+</html>

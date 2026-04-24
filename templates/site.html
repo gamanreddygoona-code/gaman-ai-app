@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaman AI — The Future of Local Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000000;
+            --accent: #6c63ff;
+            --accent2: #00d4ff;
+            --text: #ffffff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ── BACKGROUND ANIMATION ── */
+        .neural-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #121225 0%, #000 70%);
+        }
+        .glow {
+            position: absolute;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            filter: blur(100px);
+            opacity: 0.15;
+            animation: drift 20s infinite alternate;
+        }
+
+        @keyframes drift {
+            from { transform: translate(-20%, -20%); }
+            to { transform: translate(40%, 40%); }
+        }
+
+        /* ── NAVIGATION ── */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 10%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .logo {
+            font-weight: 900;
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-links { display: flex; gap: 40px; }
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255,255,255,0.6);
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .nav-links a:hover { color: #fff; }
+
+        /* ── HERO ── */
+        section { padding: 100px 10%; }
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding-top: 150px;
+        }
+        .hero h1 {
+            font-size: 84px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+            background: linear-gradient(to bottom, #fff 0%, #aaa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            max-width: 600px;
+            font-size: 18px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 40px;
+        }
+        .cta {
+            padding: 18px 40px;
+            background: #fff;
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .cta:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
+
+        /* ── FEATURES ── */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 100px;
+        }
+        .feature-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 40px;
+            border-radius: 30px;
+            transition: 0.4s;
+        }
+        .feature-card:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: var(--accent);
+            transform: translateY(-10px);
+        }
+        .f-icon {
+            font-size: 32px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .feature-card h3 { margin-bottom: 10px; font-size: 20px; }
+        .feature-card p { color: rgba(255,255,255,0.4); font-size: 14px; }
+
+        /* ── FOOTER ── */
+        footer {
+            padding: 60px 10%;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            color: rgba(255,255,255,0.3);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="neural-bg">
+        <div class="glow"></div>
+    </div>
+
+    <nav>
+        <div class="logo">GAMAN AI</div>
+        <div class="nav-links">
+            <a href="#">Technology</a>
+            <a href="#">Ecosystem</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Local Intelligence.<br>Universal Mastery.</h1>
+        <p>The first fully autonomous AI persona that learns live from the world, builds 3D engines, and maintains local-first privacy.</p>
+        <a href="#" class="cta">Initialize Neural Link</a>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <span class="f-icon">🧠</span>
+                <h3>Live Learning</h3>
+                <p>Autonomous web scraping and Wikipedia ingestion into a persistent SQLite core.</p>
+            </div>
+            <div class="feature-card">
+                <span class="f-icon">🎮</span>
+                <h3>3D Generation</h3>
+                <p>AAA-quality browser game engines powered by Three.js and Unity HDRP logic.</p>
+            </div>
+            <div class="feature-card">
+                <span class="f-icon">🔒</span>
+                <h3>100% Local</h3>
+                <p>Your data stays on your machine. Zero tracking. Zero simulation. Pure intelligence.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 GAMAN AI ARCHITECTURE. ALL SYSTEMS NOMINAL.
+    </footer>
+</body>
+</html>

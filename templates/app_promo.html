@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent: #6c63ff; --bg: #050508; --text: #ffffff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+        
+        /* Premium Background */
+        .glow {
+            position: fixed; width: 600px; height: 600px;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            filter: blur(120px); opacity: 0.15; z-index: -1;
+            animation: move 20s infinite alternate;
+        }
+        @keyframes move { from { transform: translate(-20%, -20%); } to { transform: translate(40%, 40%); } }
+
+        nav { display: flex; justify-content: space-between; padding: 30px 10%; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 100; }
+        .logo { font-weight: 900; font-size: 24px; letter-spacing: -1px; }
+        
+        .hero { padding: 150px 10% 100px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+        .hero h1 { font-size: 82px; font-weight: 900; line-height: 0.9; margin-bottom: 30px; letter-spacing: -3px; background: linear-gradient(to bottom, #fff 40%, rgba(255,255,255,0.4)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 18px; color: rgba(255,255,255,0.5); max-width: 600px; margin-bottom: 50px; }
+        .btn { padding: 18px 45px; background: #fff; color: #000; text-decoration: none; border-radius: 100px; font-weight: 700; transition: 0.4s; }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 10px 40px rgba(255,255,255,0.2); }
+
+        .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; padding: 100px 10%; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); padding: 40px; border-radius: 30px; backdrop-filter: blur(10px); transition: 0.4s; }
+        .card:hover { border-color: var(--accent); transform: translateY(-10px); background: rgba(255,255,255,0.06); }
+        .card h3 { margin-bottom: 15px; font-size: 22px; }
+        .card p { color: rgba(255,255,255,0.4); font-size: 15px; line-height: 1.6; }
+
+        footer { padding: 60px 10%; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="glow"></div>
+    <nav>
+        <div class="logo">PREMIUM</div>
+        <div style="display:flex; gap:30px; font-size:14px; font-weight:600; opacity:0.6;">
+            <span>Discovery</span><span>Vision</span><span>Legacy</span>
+        </div>
+    </nav>
+    <section class="hero">
+        <h1>Premium Experience</h1>
+        <p>The ultimate destination for A 3D website for my app promotion. Experience unparalleled luxury and innovation.</p>
+        <a href="#" class="btn">Explore Excellence</a>
+    </section>
+    <section class="features">
+        <div class="card"><h3>Innovation</h3><p>Leading edge technology tailored for your needs.</p></div>
+        <div class="card"><h3>Excellence</h3><p>Crafting experiences that transcend the ordinary.</p></div>
+        <div class="card"><h3>Future-Ready</h3><p>Scaling your vision with next-generation architecture.</p></div>
+    </section>
+    <footer>&copy; 2026 PREMIUM EXPERIENCE. PREMIUM DIGITAL ARCHITECTURE.</footer>
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            const glow = document.querySelector('.glow');
+            glow.style.left = (e.clientX - 300) + 'px';
+            glow.style.top = (e.clientY - 300) + 'px';
+        });
+    </script>
+</body>
+</html>
