@@ -10,6 +10,8 @@ Handles all SQLite database operations:
 import sqlite3
 import os
 
+from mongodb_db import is_mongodb_enabled, init_mongodb, save_chat_mongo, get_chat_history_mongo, get_knowledge_context_mongo, add_knowledge_mongo
+
 DB_PATH = "./ai_data.db"
 SHARDS = [f"./shard_worker_{i}.db" for i in range(10)]
 
@@ -26,6 +28,10 @@ def init_db():
     Creates required tables if they don't already exist.
     Safe to call every startup — will never overwrite existing data.
     """
+    if is_mongodb_enabled():
+        init_mongodb()
+        return
+
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -69,6 +75,10 @@ def init_db():
 
 def save_chat(user_message: str, bot_response: str):
     """Saves one conversation turn to chat_history."""
+    if is_mongodb_enabled():
+        save_chat_mongo(user_message, bot_response)
+        return
+
     conn = get_connection()
     conn.execute(
         "INSERT INTO chat_history (user_message, bot_response) VALUES (?, ?)",
@@ -81,6 +91,9 @@ def save_chat(user_message: str, bot_response: str):
 def get_chat_history(limit: int = 20) -> list[dict]:
     """Returns the most recent `limit` conversation turns (oldest first).
     Default limit is 20 to maintain full context."""
+    if is_mongodb_enabled():
+        return get_chat_history_mongo(limit)
+
     conn = get_connection()
     rows = conn.execute(
         "SELECT user_message, bot_response FROM chat_history ORDER BY id DESC LIMIT ?",
@@ -93,6 +106,9 @@ def get_chat_history(limit: int = 20) -> list[dict]:
 
 def get_extended_chat_history(limit: int = 50) -> list[dict]:
     """Returns extended conversation history for semantic analysis (oldest first)."""
+    if is_mongodb_enabled():
+        return get_chat_history_mongo(limit)
+
     conn = get_connection()
     rows = conn.execute(
         "SELECT user_message, bot_response FROM chat_history ORDER BY id DESC LIMIT ?",
@@ -104,6 +120,10 @@ def get_extended_chat_history(limit: int = 50) -> list[dict]:
 
 def get_chat_history_count() -> int:
     """Returns the total number of conversation turns saved in history."""
+    if is_mongodb_enabled():
+        from mongodb_db import db
+        return db.chat_history.count_documents({})
+
     conn = get_connection()
     count = conn.execute("SELECT COUNT(*) FROM chat_history").fetchone()[0]
     conn.close()
@@ -115,6 +135,9 @@ def get_knowledge_context(max_entries: int = 5) -> str:
     Returns the newest knowledge entries joined into a single context string
     that can be prepended to the model prompt.
     """
+    if is_mongodb_enabled():
+        return get_knowledge_context_mongo(max_entries)
+
     conn = get_connection()
     rows = conn.execute(
         "SELECT topic, content FROM knowledge ORDER BY id DESC LIMIT ?",
@@ -133,6 +156,10 @@ def get_knowledge_context(max_entries: int = 5) -> str:
 
 def add_knowledge(topic: str, content: str):
     """Inserts a new entry into the knowledge base."""
+    if is_mongodb_enabled():
+        add_knowledge_mongo(topic, content)
+        return
+
     conn = get_connection()
     conn.execute(
         "INSERT INTO knowledge (topic, content) VALUES (?, ?)",

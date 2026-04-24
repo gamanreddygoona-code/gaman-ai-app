@@ -25,3 +25,5 @@ llama-cpp-python
 faiss-cpu
 # Model download helper
 huggingface_hub
+pymongo
+dnspython
