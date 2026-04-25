@@ -1,0 +1,33 @@
+🚀 MASSIVE KNOWLEDGE EXPANSION
+📊 Current: 1546 facts
+
+📥 Ingesting 1283 Wikipedia topics...
+  ✓ 100/1283
+  ✓ 200/1283
+  ✓ 300/1283
+  ✓ 400/1283
+  ✓ 500/1283
+  ✓ 600/1283
+  ✓ 700/1283
+  ✓ 800/1283
+  ✓ 900/1283
+  ✓ 1000/1283
+  ✓ 1100/1283
+  ✓ 1200/1283
+✅ Wikipedia: 1283 topics ingested
+
+📥 Ingesting 23 advanced Q&A pairs...
+✅ Q&A: 23 pairs ingested
+
+============================================================
+📊 EXPANSION COMPLETE
+  Before: 1546 facts
+  Added: 0 facts
+  Total: 1546 facts
+  Time: 5.2s
+============================================================
+
+📈 Knowledge Base Stats:
+  Total facts: 1546
+  Categories: {'encyclopedic': 1491, 'qa_pairs': 55}
+  Sources: {'advanced_qa': 23, 'curated_qa': 32, 'wikipedia': 1491}

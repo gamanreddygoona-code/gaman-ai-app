@@ -1,0 +1,24 @@
+🌐 Wikipedia Mass Fetch — 696 topics
+📊 Starting: 2406 facts
+
+  [50/696] Added: 50 | Rate: 5.5/s | ETA: 117s
+  [100/696] Added: 95 | Rate: 6.3/s | ETA: 94s
+  [150/696] Added: 125 | Rate: 6.3/s | ETA: 87s
+  [200/696] Added: 136 | Rate: 6.7/s | ETA: 74s
+  [250/696] Added: 149 | Rate: 6.8/s | ETA: 65s
+  [300/696] Added: 174 | Rate: 6.9/s | ETA: 57s
+  [350/696] Added: 186 | Rate: 7.0/s | ETA: 49s
+  [400/696] Added: 202 | Rate: 6.8/s | ETA: 43s
+  [450/696] Added: 220 | Rate: 6.8/s | ETA: 36s
+  [500/696] Added: 244 | Rate: 6.8/s | ETA: 29s
+  [550/696] Added: 265 | Rate: 6.8/s | ETA: 22s
+  [600/696] Added: 281 | Rate: 6.7/s | ETA: 14s
+  [650/696] Added: 299 | Rate: 6.7/s | ETA: 7s
+
+============================================================
+✅ WIKIPEDIA MASS FETCH COMPLETE
+   Topics:  696
+   Added:   325  |  Failed/duplicate: 371
+   Before:  2406  →  After: 2668
+   Time:    103.9s  (3.1 facts/s)
+============================================================

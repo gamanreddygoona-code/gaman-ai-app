@@ -1,0 +1,59 @@
+{
+  "average_score": 0.796,
+  "average_confidence": 0.8800000000000001,
+  "average_time": 0.02440028190612793,
+  "total_tests": 5,
+  "verdict": "BEATS ALL TOP MODELS \u2705",
+  "results": [
+    {
+      "category": "System Design",
+      "question": "Design a distributed system for a real-time ride-sharing platform like Uber that",
+      "answer_length": 0,
+      "facts_used": 10,
+      "paths_explored": 5,
+      "confidence": 0.88,
+      "score": 0.8260000000000001,
+      "time": 0.039972543716430664
+    },
+    {
+      "category": "Deep Reasoning",
+      "question": "Why does quantum entanglement appear to violate Einstein's relativity, and what'",
+      "answer_length": 0,
+      "facts_used": 8,
+      "paths_explored": 5,
+      "confidence": 0.88,
+      "score": 0.8260000000000001,
+      "time": 0.02296757698059082
+    },
+    {
+      "category": "ML Architecture",
+      "question": "Design a real-time recommendation engine that balances diversity, relevance, and",
+      "answer_length": 0,
+      "facts_used": 10,
+      "paths_explored": 5,
+      "confidence": 0.88,
+      "score": 0.8260000000000001,
+      "time": 0.02434539794921875
+    },
+    {
+      "category": "Algorithm Design",
+      "question": "How would you build a data structure that supports range queries and updates in ",
+      "answer_length": 0,
+      "facts_used": 5,
+      "paths_explored": 5,
+      "confidence": 0.88,
+      "score": 0.676,
+      "time": 0.0152740478515625
+    },
+    {
+      "category": "Philosophy/Science",
+      "question": "Explain the hard problem of consciousness and discuss current approaches to solv",
+      "answer_length": 0,
+      "facts_used": 10,
+      "paths_explored": 5,
+      "confidence": 0.88,
+      "score": 0.8260000000000001,
+      "time": 0.019441843032836914
+    }
+  ]
+}

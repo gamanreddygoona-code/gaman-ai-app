@@ -1,0 +1,16 @@
+📖 Wikipedia Sections Fetcher
+   Articles: 127
+   Expected facts: 635–1016
+   Starting from: 13,270 facts
+
+  [20/127] sections=121, added=121 | 67s
+  [40/127] sections=171, added=171 | 94s
+  [60/127] sections=215, added=215 | 137s
+  [80/127] sections=248, added=248 | 168s
+  [100/127] sections=309, added=309 | 223s
+  [120/127] sections=361, added=361 | 263s
+
+✅ Sections fetch complete
+   Sections extracted: 379
+   Facts added: 379
+   Total: 13,649 | Time: 284s

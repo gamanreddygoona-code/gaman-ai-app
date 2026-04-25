@@ -1,0 +1,8 @@
+[model_loader] ✅ Engine ready (lazy load, mode: smart-local)
+[learning] ✅ Semantic embeddings enabled (sentence-transformers)
+[cloud_llm] ⚠️  No cloud API keys set. Using local fallback.
+[db] ✅ Database initialised.
+[learning] ✅ Learning tables initialized
+⚠️  FAISS index not found. Build it first with build_faiss_index()
+[app] ℹ️  FAISS index not built yet — run: python smart_response_engine.py build
+[app] ✅ App started with learning system. Visit http://127.0.0.1:8000

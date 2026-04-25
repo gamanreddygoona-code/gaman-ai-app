@@ -28,3 +28,6 @@ static/previews/
 shard_worker_*.db
 ai_data.db
 ai_data_part_*.db
+
+# Models
+models/

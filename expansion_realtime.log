@@ -1,0 +1,35 @@
+🚀 REAL KNOWLEDGE EXPANSION (Target: 100K+ facts)
+📊 Starting from: 1546 facts
+
+📥 Phase 1: Fetching Wikipedia articles (target: 5,000)...
+  ✓ 10 Wikipedia articles fetched
+  ✓ 20 Wikipedia articles fetched
+  ✓ 30 Wikipedia articles fetched
+  ✓ 40 Wikipedia articles fetched
+  ✓ 50 Wikipedia articles fetched
+  ✓ 60 Wikipedia articles fetched
+✅ Wikipedia: 68 articles added
+
+📥 Phase 2: Fetching Stack Overflow answers (target: 2,000)...
+✅ Stack Overflow: 0 Q&A added
+
+📥 Phase 3: Fetching ArXiv abstracts (target: 1,000)...
+✅ ArXiv: 0 papers added
+
+📥 Phase 4: Adding code patterns (target: 500)...
+✅ Code Patterns: 30 patterns added
+
+
+============================================================
+✨ KNOWLEDGE EXPANSION COMPLETE
+  Before: 1546 facts
+  Added: 98 facts
+  After: 1802 facts
+  Expansion: +117%
+  Time: 87.4s
+============================================================
+
+📊 Knowledge Base Stats:
+  Total facts: 1802
+  Categories: {'encyclopedic': 1491, 'research': 181, 'qa_pairs': 55, 'technical': 45, 'patterns': 30}
+  Sources: {'advanced_qa': 23, 'arxiv': 181, 'code_patterns': 30, 'curated_qa': 32, 'wikipedia': 1491, 'wikipedia_full': 45}
