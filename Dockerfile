@@ -22,7 +22,8 @@ COPY . /app
 EXPOSE 10000
 
 # Set environment variables for the model
-ENV GAMAN_MODEL_NAME="EleutherAI/gpt-j-6b"
+ENV MODEL_ID="TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+ENV HF_HOME="/app/.cache"
 ENV PYTHONUNBUFFERED=1
 ENV PORT=10000
 

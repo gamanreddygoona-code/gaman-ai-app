@@ -7,8 +7,8 @@ Model loads only when first needed — never crashes on import.
 
 import os
 
-MODEL_ID   = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-CACHE_DIR  = "C:/Users/vijay/.cache/huggingface/hub"
+MODEL_ID   = os.getenv("MODEL_ID", "TinyLlama/TinyLlama-1.1B-Chat-v1.0")
+CACHE_DIR  = os.getenv("HF_HOME", "/app/.cache/huggingface")
 MODEL_MODE = "smart-local"   # Default until model loads
 
 _pipe      = None   # Lazy-loaded
