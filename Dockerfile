@@ -18,12 +18,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . /app
 
-# Expose the API port
-EXPOSE 8000
+# Expose the API port (Render defaults to 10000)
+EXPOSE 10000
 
 # Set environment variables for the model
 ENV GAMAN_MODEL_NAME="EleutherAI/gpt-j-6b"
 ENV PYTHONUNBUFFERED=1
+ENV PORT=10000
 
 # Command to run the application
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD uvicorn app:app --host 0.0.0.0 --port $PORT
